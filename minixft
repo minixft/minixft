@@ -1,0 +1,102 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head><title>Welcome</title></head>
+<body>
+  <h1>Welcome to Ask & Answer</h1>
+  <a href="/signup">Sign Up</a> | <a href="/login">Login</a>
+</body>
+</html>
+
+<!-- templates/signup.html -->
+<!DOCTYPE html>
+<html>
+<head><title>Sign Up</title></head>
+<body>
+  <h1>Sign Up</h1>
+  <form method="post">
+    Email: <input type="email" name="email"><br>
+    Password: <input type="password" name="password"><br>
+    <button type="submit">Sign Up</button>
+  </form>
+</body>
+</html>
+
+<!-- templates/login.html -->
+<!DOCTYPE html>
+<html>
+<head><title>Login</title></head>
+<body>
+  <h1>Login</h1>
+  <form method="post">
+    Email: <input type="email" name="email"><br>
+    Password: <input type="password" name="password"><br>
+    <button type="submit">Login</button>
+  </form>
+</body>
+</html>
+
+<!-- templates/ask.html -->
+<!DOCTYPE html>
+<html>
+<head><title>Ask Question</title></head>
+<body>
+  <h1>Ask a Question</h1>
+  <p>You have {{ credits }} question credits.</p>
+  <form method="post">
+    <textarea name="question" rows="5" cols="40"></textarea><br>
+    <button type="submit">Submit</button>
+  </form>
+  <form method="post" action="/buy-credits" onsubmit="buy(event)">
+    <button type="submit">Buy 5 Questions (₹50)</button>
+  </form>
+  <script>
+    async function buy(e) {
+      e.preventDefault();
+      const res = await fetch('/buy-credits', { method: 'POST' });
+      const data = await res.json();
+      window.location.href = data.url;
+    }
+  </script>
+  <a href="/my-answers">My Answers</a> | <a href="/logout">Logout</a>
+</body>
+</html>
+
+<!-- templates/answers.html -->
+<!DOCTYPE html>
+<html>
+<head><title>My Answers</title></head>
+<body>
+  <h1>Your Questions & Answers</h1>
+  <ul>
+    {% for q in questions %}
+    <li>
+      <b>Q:</b> {{ q.text }}<br>
+      <b>A:</b> {{ q.answer or "Pending..." }}<br>
+      {% if q.answer %}<a href="/download/{{ q.id }}">Download PDF</a>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  <a href="/ask">Ask More</a>
+</body>
+</html>
+
+<!-- templates/dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head><title>Admin Dashboard</title></head>
+<body>
+  <h1>Admin Dashboard</h1>
+  <ul>
+    {% for q in questions %}
+    <li>
+      <b>Q:</b> {{ q.text }}<br>
+      <form method="post" action="/answer/{{ q.id }}">
+        <textarea name="answer">{{ q.answer }}</textarea>
+        <button type="submit">Save Answer</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
